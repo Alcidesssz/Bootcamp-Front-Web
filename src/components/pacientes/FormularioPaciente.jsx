@@ -158,6 +158,55 @@ const FormularioPaciente = () => {
                     onChange={handleChange}
                     />
                     </div>
+        <h4 className={styles.subtitulo}>Direccion</h4>
+        <div className={styles.formGroup}>
+            <div>
+                <label>Calle*</label>
+                <input
+                    type="text"
+                    name="direccion.calle"
+                    value={paciente.direccion.calle}
+                    className={styles.campoInput}
+                    placeholder="Angel Soto"
+                    onChange={handleChange}
+                />    
+            </div>
+            <div>
+                <label>Numero*</label>
+                <input
+                    type="number"
+                    name="direccion.numero"
+                    value={paciente.direccion.numero}
+                    className={styles.campoInput}
+                    placeholder="1234"
+                    onChange={handleChange}
+                />    
+            </div>
+            </div>
+            <div className={styles.formGroup}>
+            <div>
+                <label>Ciudad*</label>
+                <input
+                    type="text"
+                    name="direccion.ciudad"
+                    value={paciente.direccion.ciudad}
+                    className={styles.campoInput}
+                    placeholder="Goya"
+                    onChange={handleChange}
+                />    
+            </div>
+            <div>
+                <label>Provincia*</label>
+                <input
+                    type="text"
+                    name="direccion.provincia"
+                    value={paciente.direccion.provincia}
+                    className={styles.campoInput}
+                    placeholder="Corrientes"
+                    onChange={handleChange}
+                />    
+            </div>
+        </div>
                     </div>
                 
                 <button type="submit" className={styles.btnGuardar}>
