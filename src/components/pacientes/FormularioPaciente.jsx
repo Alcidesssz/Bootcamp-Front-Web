@@ -1,19 +1,29 @@
 import {useState} from "react"
 import styles from './FormularioPaciente.module.scss';
 import JsonDebugger from "../utils/JsonDebugger";
+import validarDatos from '../utils/validaciones';
+// Reglas de validación por campo
+const reglasPaciente = {
+    nombre: (valor) => valor.trim() === "" ? "El nombre es obligatorio" : null,
+    dni: (valor) => valor.length < 8 ? "El DNI es obligatorio" : null,
+    // Cambiamos "email" por "correoelectronico"
+    // Y validamos solo si el usuario escribió algo (valor !== "")
+    correoelectronico: (valor) => valor !== "" && !valor.includes("@") ? "El email debe contener @" : null,
+};
 
 const FormularioPaciente = () => {
     const [paciente, setPaciente] = useState({
-        nombre: "",
-        dni: "",
-        fechaNacimiento: "",
-        sexo: "",
-        direccion: {calle: "", numero: "", ciudad: "", provincia: ""},
-        telefono: {codPais: "", codArea: "", numero: ""},
-        correoElectronico: "",
-        obraSocial: {nombre: "", numeroAfiliado: ""},
-
+        Nombre: "",
+        DNI: "",
+        FechaNacimiento: "",
+        Sexo: "",
+        Direccion: {Calle: "", Numero: "", Ciudad: "", Provincia: ""},
+        Telefono: {tipo: "Celular", codArea: "", numero: ""},
+        CorreoElectronico: "",
+        ObraSocial: {Nombre: "", NumeroAfiliado: ""},
     });
+
+    const [errores, setErrores] = useState({});
 
       const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,6 +42,12 @@ const FormularioPaciente = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Valida antes de enviar
+    const nuevosErrores = validarDatos(paciente, reglasPaciente);
+    setErrores(nuevosErrores);
+    if (Object.keys(nuevosErrores).length > 0) return;
+
     try {
       const response = await fetch("http://localhost:3001/pacientes", {
         method: "POST",
@@ -39,24 +55,26 @@ const FormularioPaciente = () => {
         body: JSON.stringify(paciente),
       });
 
+      await response.json();
+
       if (response.ok) {
         alert("Paciente guardado con éxito!");
         setPaciente({
-        nombre: "",
-        dni: "",
-        fechaNacimiento: "",
-        sexo: "",
-        direccion: {calle: "", numero: "", ciudad: "", provincia: ""},
-        telefono: {codPais: "", codArea: "", numero: ""},
-        correoElectronico: "",
-        obraSocial: {nombre: "", numeroAfiliado: ""},
+          Nombre: "",
+          DNI: "",
+          FechaNacimiento: "",
+          Sexo: "",
+          Direccion: {Calle: "", Numero: "", Ciudad: "", Provincia: ""},
+          Telefono: {tipo: "Celular", CodArea: "", Numero: ""},
+          CorreoElectronico: "",
+          ObraSocial: {Nombre: "", NumeroAfiliado: ""},
         });
+      }
+    } catch (error){
+      console.error("Error:", error);
+      alert("Error al guardar");
     }
-} catch (error){
-    console.error("Error:", error);
-    alert("Error al guardar");
-    }
-};
+  };
 
     return (
     <div className={styles.contenedorFormulario}>
@@ -69,29 +87,31 @@ const FormularioPaciente = () => {
             <label>Nombre Completo*</label>
                 <input 
                     type="text"
-                    name="nombre"
-                    value={paciente.nombre}
+                    name="Nombre"
+                    value={paciente.Nombre}
                     onChange={handleChange}
                     className={styles.campoInput}
                     />
+                    {errores.Nombre && <span className={styles.error}>{errores.Nombre}</span>}
                     </div>
             <div>
                 <label>DNI*</label>
                 <input 
                     type="number"
-                    name="dni"
-                    value={paciente.dni}
+                    name="DNI"
+                    value={paciente.DNI}
                     className={styles.campoInput}
                     placeholder="DNI"
                     onChange={handleChange}
                     />
+                    {errores.DNI && <span className={styles.error}>{errores.DNI}</span>}
                 </div>
             <div>
                 <label>Fecha de Nacimiento*</label>
                 <input 
                     type="date"
-                    name="fechaNacimiento"
-                    value={paciente.fechaNacimiento}
+                    name="FechaNacimiento"
+                    value={paciente.FechaNacimiento}
                     className={styles.campoInput}
                     placeholder="Fecha Nacimiento"
                     onChange={handleChange}
@@ -101,8 +121,8 @@ const FormularioPaciente = () => {
                 <label>Sexo*</label>
                 <select
                     className={styles.campoInput}
-                    name="sexo"
-                    value={paciente.sexo}
+                    name="Sexo"
+                    value={paciente.Sexo}
                     onChange={handleChange}
                     >
                         <option value="">Seleccionar Sexo</option>
@@ -114,22 +134,23 @@ const FormularioPaciente = () => {
         <h4 className={styles.subtitulo}>Contacto</h4>
         <div className={styles.formGroup}>
             <div>
-                <label>Codigo Pais*</label>
-                <input
-                    type="number"
-                    name="telefono.codPais"
-                    value={paciente.telefono.codPais}
+                <label>Tipo*</label>
+                <select
                     className={styles.campoInput}
-                    placeholder="+54"
+                    name="Telefono.tipo"
+                    value={paciente.Telefono.tipo}
                     onChange={handleChange}
-                />    
+                    >
+                        <option value="Celular">Celular</option>
+                        <option value="Fijo">Fijo</option>
+                </select>    
             </div>
             <div>
                 <label>Codigo Area*</label>
                 <input
                     type="number"
-                    name="telefono.codArea"
-                    value={paciente.telefono.codArea}
+                    name="Telefono.codArea"
+                    value={paciente.Telefono.codArea}
                     className={styles.campoInput}
                     placeholder="3777"
                     onChange={handleChange}
@@ -139,8 +160,8 @@ const FormularioPaciente = () => {
                 <label>Numero*</label>
                 <input
                     type="number"
-                    name="telefono.numero"
-                    value={paciente.telefono.numero}
+                    name="Telefono.numero"
+                    value={paciente.Telefono.numero}
                     className={styles.campoInput}
                     placeholder="334455"
                     onChange={handleChange}
@@ -151,12 +172,13 @@ const FormularioPaciente = () => {
                 <label>Correo Electronico*</label>    
                 <input 
                     type="text"
-                    name="correoElectronico"
-                    value={paciente.correoElectronico}
+                    name="CorreoElectronico"
+                    value={paciente.CorreoElectronico}
                     className={styles.campoInput}
                     placeholder="Correo Electronico"
                     onChange={handleChange}
                     />
+                    {errores.CorreoElectronico && <span className={styles.error}>{errores.CorreoElectronico}</span>}
                     </div>
         <h4 className={styles.subtitulo}>Direccion</h4>
         <div className={styles.formGroup}>
@@ -164,8 +186,8 @@ const FormularioPaciente = () => {
                 <label>Calle*</label>
                 <input
                     type="text"
-                    name="direccion.calle"
-                    value={paciente.direccion.calle}
+                    name="Direccion.Calle"
+                    value={paciente.Direccion.Calle}
                     className={styles.campoInput}
                     placeholder="Angel Soto"
                     onChange={handleChange}
@@ -175,8 +197,8 @@ const FormularioPaciente = () => {
                 <label>Numero*</label>
                 <input
                     type="number"
-                    name="direccion.numero"
-                    value={paciente.direccion.numero}
+                    name="Direccion.Numero"
+                    value={paciente.Direccion.Numero}
                     className={styles.campoInput}
                     placeholder="1234"
                     onChange={handleChange}
@@ -188,8 +210,8 @@ const FormularioPaciente = () => {
                 <label>Ciudad*</label>
                 <input
                     type="text"
-                    name="direccion.ciudad"
-                    value={paciente.direccion.ciudad}
+                    name="Direccion.Ciudad"
+                    value={paciente.Direccion.Ciudad}
                     className={styles.campoInput}
                     placeholder="Goya"
                     onChange={handleChange}
@@ -199,8 +221,8 @@ const FormularioPaciente = () => {
                 <label>Provincia*</label>
                 <input
                     type="text"
-                    name="direccion.provincia"
-                    value={paciente.direccion.provincia}
+                    name="Direccion.Provincia"
+                    value={paciente.Direccion.Provincia}
                     className={styles.campoInput}
                     placeholder="Corrientes"
                     onChange={handleChange}
@@ -213,8 +235,8 @@ const FormularioPaciente = () => {
                 <label>Obra Social*</label>
                 <select
                     className={styles.campoInput}
-                    name="obraSocial.nombre"
-                    value={paciente.obraSocial.nombre}
+                    name="ObraSocial.Nombre"
+                    value={paciente.ObraSocial.Nombre}
                     onChange={handleChange}
                     >
                         <option value="">Seleccionar Obra Social</option>
@@ -231,8 +253,8 @@ const FormularioPaciente = () => {
                 <label>Numero Afiliado*</label>
                 <input
                     type="text"
-                    name="obraSocial.numeroAfiliado"
-                    value={paciente.obraSocial.numeroAfiliado}
+                    name="ObraSocial.NumeroAfiliado"
+                    value={paciente.ObraSocial.NumeroAfiliado}
                     className={styles.campoInput}
                     onChange={handleChange}
                 />    
