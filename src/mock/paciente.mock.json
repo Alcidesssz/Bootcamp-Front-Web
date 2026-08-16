@@ -1,0 +1,25 @@
+{
+    "Nombre": "Alejandro Ramirez",
+    "DNI": "46874174",
+    "FechaNacimiento": "2006-09-27",
+    "Sexo": "Masculino",
+    "Direccion": {
+        "Calle": "Juan E. Martinez",
+        "Numero": "2680",
+        "Ciudad": "Goya",
+        "Provincia": "Corrientes"
+    },
+    "Telefono": {
+        "codPais": "+54",
+        "codArea": "3777",
+        "numero": "243530"
+    },
+    "CorreoElectronico": "alegandri@gmail.com",
+    "HistorialMedico": {
+        "ObraSocial": "IOSFA",
+        "NumeroAfiliado": "12734605728923847",
+        "GrupoSanguineo": "A+",
+        "Alergias": "Corticoid",
+        "EnfermedadesPrevias": "Asma"
+    }
+}
