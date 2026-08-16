@@ -1,18 +1,18 @@
 import {useState} from "react"
 import styles from './FormularioPaciente.module.scss';
 import JsonDebugger from "../utils/JsonDebugger";
-import validarDatos from '../utils/validaciones';
+import validarDatos from '../utils/validaciones.js';
 // Reglas de validación por campo
 const reglasPaciente = {
-    nombre: (valor) => valor.trim() === "" ? "El nombre es obligatorio" : null,
-    dni: (valor) => valor.length < 8 ? "El DNI es obligatorio" : null,
+    Nombre: (valor) => valor.trim() === "" ? "El nombre es obligatorio" : null,
+    DNI: (valor) => valor.length < 8 ? "El DNI es obligatorio" : null,
     // Cambiamos "email" por "correoelectronico"
     // Y validamos solo si el usuario escribió algo (valor !== "")
-    correoelectronico: (valor) => valor !== "" && !valor.includes("@") ? "El email debe contener @" : null,
+    CorreoElectronico: (valor) => valor !== "" && !valor.includes("@") ? "El email debe contener @" : null,
 };
 
 const FormularioPaciente = () => {
-    const [paciente, setPaciente] = useState({
+    const [Paciente, setPaciente] = useState({
         Nombre: "",
         DNI: "",
         FechaNacimiento: "",
@@ -44,18 +44,25 @@ const FormularioPaciente = () => {
     e.preventDefault();
     
     // Valida antes de enviar
-    const nuevosErrores = validarDatos(paciente, reglasPaciente);
+    const nuevosErrores = validarDatos(Paciente, reglasPaciente);
     setErrores(nuevosErrores);
-    if (Object.keys(nuevosErrores).length > 0) return;
+    if (Object.keys(nuevosErrores).length > 0) {
+      console.log("Validación fallida"); 
+      return;
+    }
+
+    console.log("JSON que voy a enviar:", Paciente);
 
     try {
-      const response = await fetch("http://localhost:3001/pacientes", {
+      const response = await fetch("http://localhost:3000/api/v1/pacientes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(paciente),
+        body: JSON.stringify(Paciente),
       });
 
-      await response.json();
+      const data = await response.json();
+
+      console.log("Respuesta del servidor:", data);
 
       if (response.ok) {
         alert("Paciente guardado con éxito!");
@@ -65,11 +72,16 @@ const FormularioPaciente = () => {
           FechaNacimiento: "",
           Sexo: "",
           Direccion: {Calle: "", Numero: "", Ciudad: "", Provincia: ""},
-          Telefono: {tipo: "Celular", CodArea: "", Numero: ""},
+          Telefono: {tipo: "Celular", codArea: "", numero: ""},
           CorreoElectronico: "",
           ObraSocial: {Nombre: "", NumeroAfiliado: ""},
         });
       }
+      else {
+        console.error("Error del servidor:", data);
+        alert(`Error: ${data.message || "No se pudo guardar el paciente"}`);
+      }
+      
     } catch (error){
       console.error("Error:", error);
       alert("Error al guardar");
@@ -88,9 +100,10 @@ const FormularioPaciente = () => {
                 <input 
                     type="text"
                     name="Nombre"
-                    value={paciente.Nombre}
+                    value={Paciente.Nombre}
                     onChange={handleChange}
                     className={styles.campoInput}
+                    required
                     />
                     {errores.Nombre && <span className={styles.error}>{errores.Nombre}</span>}
                     </div>
@@ -99,10 +112,11 @@ const FormularioPaciente = () => {
                 <input 
                     type="number"
                     name="DNI"
-                    value={paciente.DNI}
+                    value={Paciente.DNI}
                     className={styles.campoInput}
                     placeholder="DNI"
                     onChange={handleChange}
+                    required
                     />
                     {errores.DNI && <span className={styles.error}>{errores.DNI}</span>}
                 </div>
@@ -111,7 +125,7 @@ const FormularioPaciente = () => {
                 <input 
                     type="date"
                     name="FechaNacimiento"
-                    value={paciente.FechaNacimiento}
+                    value={Paciente.FechaNacimiento}
                     className={styles.campoInput}
                     placeholder="Fecha Nacimiento"
                     onChange={handleChange}
@@ -122,13 +136,13 @@ const FormularioPaciente = () => {
                 <select
                     className={styles.campoInput}
                     name="Sexo"
-                    value={paciente.Sexo}
+                    value={Paciente.Sexo}
                     onChange={handleChange}
                     >
                         <option value="">Seleccionar Sexo</option>
-                        <option value="masculino">Masculino</option>
-                        <option value="femenino">Femenino</option>
-                        <option value="otro">Otro</option>
+                        <option value="Masculino">Masculino</option>
+                        <option value="Femenino">Femenino</option>
+                        <option value="Otro">Otro</option>
                 </select>
         </div>
         <h4 className={styles.subtitulo}>Contacto</h4>
@@ -138,7 +152,7 @@ const FormularioPaciente = () => {
                 <select
                     className={styles.campoInput}
                     name="Telefono.tipo"
-                    value={paciente.Telefono.tipo}
+                    value={Paciente.Telefono.tipo}
                     onChange={handleChange}
                     >
                         <option value="Celular">Celular</option>
@@ -150,7 +164,7 @@ const FormularioPaciente = () => {
                 <input
                     type="number"
                     name="Telefono.codArea"
-                    value={paciente.Telefono.codArea}
+                    value={Paciente.Telefono.codArea}
                     className={styles.campoInput}
                     placeholder="3777"
                     onChange={handleChange}
@@ -161,7 +175,7 @@ const FormularioPaciente = () => {
                 <input
                     type="number"
                     name="Telefono.numero"
-                    value={paciente.Telefono.numero}
+                    value={Paciente.Telefono.numero}
                     className={styles.campoInput}
                     placeholder="334455"
                     onChange={handleChange}
@@ -173,7 +187,7 @@ const FormularioPaciente = () => {
                 <input 
                     type="text"
                     name="CorreoElectronico"
-                    value={paciente.CorreoElectronico}
+                    value={Paciente.CorreoElectronico}
                     className={styles.campoInput}
                     placeholder="Correo Electronico"
                     onChange={handleChange}
@@ -187,7 +201,7 @@ const FormularioPaciente = () => {
                 <input
                     type="text"
                     name="Direccion.Calle"
-                    value={paciente.Direccion.Calle}
+                    value={Paciente.Direccion.Calle}
                     className={styles.campoInput}
                     placeholder="Angel Soto"
                     onChange={handleChange}
@@ -198,7 +212,7 @@ const FormularioPaciente = () => {
                 <input
                     type="number"
                     name="Direccion.Numero"
-                    value={paciente.Direccion.Numero}
+                    value={Paciente.Direccion.Numero}
                     className={styles.campoInput}
                     placeholder="1234"
                     onChange={handleChange}
@@ -211,7 +225,7 @@ const FormularioPaciente = () => {
                 <input
                     type="text"
                     name="Direccion.Ciudad"
-                    value={paciente.Direccion.Ciudad}
+                    value={Paciente.Direccion.Ciudad}
                     className={styles.campoInput}
                     placeholder="Goya"
                     onChange={handleChange}
@@ -222,7 +236,7 @@ const FormularioPaciente = () => {
                 <input
                     type="text"
                     name="Direccion.Provincia"
-                    value={paciente.Direccion.Provincia}
+                    value={Paciente.Direccion.Provincia}
                     className={styles.campoInput}
                     placeholder="Corrientes"
                     onChange={handleChange}
@@ -236,7 +250,7 @@ const FormularioPaciente = () => {
                 <select
                     className={styles.campoInput}
                     name="ObraSocial.Nombre"
-                    value={paciente.ObraSocial.Nombre}
+                    value={Paciente.ObraSocial.Nombre}
                     onChange={handleChange}
                     >
                         <option value="">Seleccionar Obra Social</option>
@@ -254,7 +268,7 @@ const FormularioPaciente = () => {
                 <input
                     type="text"
                     name="ObraSocial.NumeroAfiliado"
-                    value={paciente.ObraSocial.NumeroAfiliado}
+                    value={Paciente.ObraSocial.NumeroAfiliado}
                     className={styles.campoInput}
                     onChange={handleChange}
                 />    
@@ -268,7 +282,7 @@ const FormularioPaciente = () => {
            
            </form>
             <JsonDebugger
-                data={paciente}
+                data={Paciente}
                 titulo="ESTADO DEL JSON"
             />
         </div>
