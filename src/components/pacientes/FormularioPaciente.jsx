@@ -2,6 +2,10 @@ import {useState} from "react"
 import styles from './FormularioPaciente.module.scss';
 import JsonDebugger from "../utils/JsonDebugger";
 import validarDatos from '../utils/validaciones.js';
+import DatosPersonales from "./components/DatosPersonales.jsx";
+import DireccionPaciente from "./components/DireccionPaciente.jsx";
+import ObraSocialPaciente from "./components/ObraSocialPaciente.jsx";
+import ContactoPaciente from "./components/ContactoPaciente.jsx";
 // Reglas de validación por campo
 const reglasPaciente = {
     Nombre: (valor) => valor.trim() === "" ? "El nombre es obligatorio" : null,
@@ -91,190 +95,33 @@ const FormularioPaciente = () => {
     return (
     <div className={styles.contenedorFormulario}>
       <h3>Ingreso de Nuevo Paciente</h3>
-
       <form onSubmit={handleSubmit}>
-        <h4 className={styles.subtitulo}>Datos Personales</h4>
-        <div>
-          <div>
-            <label>Nombre Completo*</label>
-                <input 
-                    type="text"
-                    name="Nombre"
-                    value={Paciente.Nombre}
-                    onChange={handleChange}
-                    className={styles.campoInput}
-                    required
-                    />
-                    {errores.Nombre && <span className={styles.error}>{errores.Nombre}</span>}
-                    </div>
-            <div>
-                <label>DNI*</label>
-                <input 
-                    type="number"
-                    name="DNI"
-                    value={Paciente.DNI}
-                    className={styles.campoInput}
-                    placeholder="DNI"
-                    onChange={handleChange}
-                    required
-                    />
-                    {errores.DNI && <span className={styles.error}>{errores.DNI}</span>}
-                </div>
-            <div>
-                <label>Fecha de Nacimiento*</label>
-                <input 
-                    type="date"
-                    name="FechaNacimiento"
-                    value={Paciente.FechaNacimiento}
-                    className={styles.campoInput}
-                    placeholder="Fecha Nacimiento"
-                    onChange={handleChange}
-                    />
-                </div>
-                <div>
-                <label>Sexo*</label>
-                <select
-                    className={styles.campoInput}
-                    name="Sexo"
-                    value={Paciente.Sexo}
-                    onChange={handleChange}
-                    >
-                        <option value="">Seleccionar Sexo</option>
-                        <option value="Masculino">Masculino</option>
-                        <option value="Femenino">Femenino</option>
-                        <option value="Otro">Otro</option>
-                </select>
-        </div>
-        <h4 className={styles.subtitulo}>Contacto</h4>
-        <div className={styles.formGroup}>
-            <div>
-                <label>Tipo*</label>
-                <select
-                    className={styles.campoInput}
-                    name="Telefono.tipo"
-                    value={Paciente.Telefono.tipo}
-                    onChange={handleChange}
-                    >
-                        <option value="Celular">Celular</option>
-                        <option value="Fijo">Fijo</option>
-                </select>    
-            </div>
-            <div>
-                <label>Codigo Area*</label>
-                <input
-                    type="number"
-                    name="Telefono.codArea"
-                    value={Paciente.Telefono.codArea}
-                    className={styles.campoInput}
-                    placeholder="3777"
-                    onChange={handleChange}
-                />    
-            </div>
-            <div>
-                <label>Numero*</label>
-                <input
-                    type="number"
-                    name="Telefono.numero"
-                    value={Paciente.Telefono.numero}
-                    className={styles.campoInput}
-                    placeholder="334455"
-                    onChange={handleChange}
-                />    
-            </div>
-        </div>
-            <div>
-                <label>Correo Electronico*</label>    
-                <input 
-                    type="text"
-                    name="CorreoElectronico"
-                    value={Paciente.CorreoElectronico}
-                    className={styles.campoInput}
-                    placeholder="Correo Electronico"
-                    onChange={handleChange}
-                    />
-                    {errores.CorreoElectronico && <span className={styles.error}>{errores.CorreoElectronico}</span>}
-                    </div>
-        <h4 className={styles.subtitulo}>Direccion</h4>
-        <div className={styles.formGroup}>
-            <div>
-                <label>Calle*</label>
-                <input
-                    type="text"
-                    name="Direccion.Calle"
-                    value={Paciente.Direccion.Calle}
-                    className={styles.campoInput}
-                    placeholder="Angel Soto"
-                    onChange={handleChange}
-                />    
-            </div>
-            <div>
-                <label>Numero*</label>
-                <input
-                    type="number"
-                    name="Direccion.Numero"
-                    value={Paciente.Direccion.Numero}
-                    className={styles.campoInput}
-                    placeholder="1234"
-                    onChange={handleChange}
-                />    
-            </div>
-            </div>
-            <div className={styles.formGroup}>
-            <div>
-                <label>Ciudad*</label>
-                <input
-                    type="text"
-                    name="Direccion.Ciudad"
-                    value={Paciente.Direccion.Ciudad}
-                    className={styles.campoInput}
-                    placeholder="Goya"
-                    onChange={handleChange}
-                />    
-            </div>
-            <div>
-                <label>Provincia*</label>
-                <input
-                    type="text"
-                    name="Direccion.Provincia"
-                    value={Paciente.Direccion.Provincia}
-                    className={styles.campoInput}
-                    placeholder="Corrientes"
-                    onChange={handleChange}
-                />    
-            </div>
-        </div>
-        <h4 className={styles.subtitulo}>Obra Social</h4>
-        <div className={styles.formGroup}>
-            <div>
-                <label>Obra Social*</label>
-                <select
-                    className={styles.campoInput}
-                    name="ObraSocial.Nombre"
-                    value={Paciente.ObraSocial.Nombre}
-                    onChange={handleChange}
-                    >
-                        <option value="">Seleccionar Obra Social</option>
-                        <option value="OSDE">OSDE</option>
-                        <option value="SWISS MEDICAL">SWISS MEDICAL</option>
-                        <option value="GALENO">GALENO</option>
-                        <option value="MEDIFE">MEDIFE</option>
-                        <option value="OSFA">OSFA</option>
-                        <option value="OTRO">OTRO</option>
-                        <option value="NINGUNA">NINGUNA</option>
-                </select>
-                </div> 
-                <div>
-                <label>Numero Afiliado*</label>
-                <input
-                    type="text"
-                    name="ObraSocial.NumeroAfiliado"
-                    value={Paciente.ObraSocial.NumeroAfiliado}
-                    className={styles.campoInput}
-                    onChange={handleChange}
-                />    
-                </div>
-            </div>   
-            </div>
+
+        <DatosPersonales
+            Paciente={Paciente}
+            errores={errores}
+          handleChange={handleChange}
+            styles={styles}
+        />
+
+        <ContactoPaciente
+            Paciente={Paciente}
+            errores={errores}
+          handleChange={handleChange}
+            styles={styles}
+        />
+        
+        <DireccionPaciente
+            Paciente={Paciente}
+          handleChange={handleChange}
+            styles={styles}
+        />
+
+        <ObraSocialPaciente
+            Paciente={Paciente}
+          handleChange={handleChange}
+            styles={styles}
+        />  
                 
                 <button type="submit" className={styles.btnGuardar}>
           Guardar Paciente
@@ -286,6 +133,7 @@ const FormularioPaciente = () => {
                 titulo="ESTADO DEL JSON"
             />
         </div>
+        
     );
 };
 

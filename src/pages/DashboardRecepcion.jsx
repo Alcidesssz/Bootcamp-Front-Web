@@ -1,31 +1,33 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Container, Badge, Row, Col, Card, Button } from 'react-bootstrap';
-
-const turnosDelDia = [
-  { id: 1, pacientes: "Juan Perez", especialidad: "Cardiología", estado: "Pendiente" },
-  { id: 2, pacientes: "María García", especialidad: "Neurología", estado: "Pendiente" },
-  { id: 3, pacientes: "Carlos López", especialidad: "Ortopedia", estado: "Pendiente" },
-  { id: 4, pacientes: "Ana Torres", especialidad: "Dermatología", estado: "Pendiente" },
-  { id: 5, pacientes: "Luis Fernández", especialidad: "Pediatría", estado: "Pendiente" },
-  { id: 6, pacientes: "Sofía Martínez", especialidad: "Ginecología", estado: "Pendiente" },
-  { id: 7, pacientes: "Diego Ramírez", especialidad: "Oftalmología", estado: "Pendiente" },
-  { id: 8, pacientes: "Valentina Gómez", especialidad: "Psiquiatría", estado: "Pendiente" },
-  { id: 9, pacientes: "Javier Torres", especialidad: "Endocrinología", estado: "Pendiente" },
-  { id: 10, pacientes: "Camila Rojas", especialidad: "Gastroenterología", estado: "Pendiente" },
-  { id: 11, pacientes: "Martín Herrera", especialidad: "Urología", estado: "Pendiente" },
-  { id: 12, pacientes: "Isabella Castro", especialidad: "Reumatología", estado: "Pendiente" },
-  { id: 13, pacientes: "Sebastián Morales", especialidad: "Otorrinolaringología", estado: "Pendiente" },
-  { id: 14, pacientes: "Lucía Vargas", especialidad: "Nefrología", estado: "Pendiente" },
-  { id: 15, pacientes: "Mateo Rivas", especialidad: "Hematología", estado: "Pendiente" },
-];
+import clientesAxios from '../config/axios';
 
 const DashboardRecepcion = () => {
     const [busqueda, setBusqueda] = useState("");
-    const [turnos, setTurnos] = useState(turnosDelDia);
+    const [turnos, setTurnos] = useState([]);
 
-const turnosFiltrados = turnos.filter(turno =>
-    turno.pacientes.toLowerCase().includes(busqueda.toLowerCase())
-);
+    const turnosFiltrados = turnos.filter(turno =>
+    turno.Paciente.Nombre.toLowerCase().includes(busqueda.toLowerCase())
+    );
+
+    useEffect(() => {
+
+    const obtenerTurnosDelBackend = async () => {
+        try{
+
+            const respuesta = await clientesAxios.get('/turnos');
+
+            setTurnos(respuesta.data.data);
+            console.log(respuesta.data.data)
+
+        } catch (error) {
+            console.error("hubo un error al sincronizar", error);
+        }
+    };
+
+    obtenerTurnosDelBackend();
+
+}, []);
 
     const marcarComoAtendido = (idturno) => {
         const turnosActualizados = turnos.map(turno => {
@@ -51,11 +53,20 @@ const turnosFiltrados = turnos.filter(turno =>
             </Row>
 
             <Row>
-                {turnosFiltrados.map((turno) => (
+                {turnos.length === 0 ? (
+
+                        <p>Cargando turnos del Servidor...</p>
+
+                ):
+                turnosFiltrados.map((turno) => (
                     <Col md={4} key={turno.id} className="mb-3">
                         <Card>
                             <Card.Body>
-                                <Card.Title>{turno.pacientes}</Card.Title>
+                                <Card.Title>{turno.Paciente.Nombre}</Card.Title>
+                                <h5>{turno.Paciente.DNI}</h5>
+                                <Card>
+
+                                </Card>
                                 <h5 className="mt-3">
                                     {turno.estado === "Atendido" 
                                     ? <Badge bg="success">Atendido</Badge> 
