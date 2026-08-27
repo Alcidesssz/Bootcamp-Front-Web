@@ -1,40 +1,20 @@
-import { useState, useEffect } from 'react'
-import { Container, Badge, Row, Col, Card, Button, Placeholder } from 'react-bootstrap';
+import { useState } from 'react'
+import { useFetch } from '../hooks/useFetch'; 
+import { Container, Row } from 'react-bootstrap';
 import { toast } from 'sonner';
 import clientesAxios from '../config/axios';
 
+import BuscadorTurnos from '../components/turnos/BuscadorTurnos';
+import TurnoCard from '../components/turnos/TurnoCard';
+import TurnoCardSkeleton from '../components/turnos/TurnoCardSkeleton';
+
 const DashboardRecepcion = () => {
     const [busqueda, setBusqueda] = useState("");
-    const [turnos, setTurnos] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const { data: turnos, setData: setTurnos, isLoading } = useFetch('/turnos')
 
     const turnosFiltrados = turnos.filter(turno =>
-    turno.Paciente.Nombre.toLowerCase().includes(busqueda.toLowerCase())
+    turno.Paciente.Nombre.toLocaleLowerCase().includes(busqueda.toLowerCase())
     );
-
-    useEffect(() => {
-
-    const obtenerTurnosDelBackend = async () => {
-        try{
-
-            await new Promise(resolve => setTimeout(resolve, 2000));
-
-            const respuesta = await clientesAxios.get('/turnos');
-
-            setTurnos(respuesta.data.data);
-            console.log(respuesta.data.data)
-
-        } catch (error) {
-            console.error("hubo un error al sincronizar", error);
-            toast.error("Error de red: no se puede conectar al servidor")
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    obtenerTurnosDelBackend();
-
-}, []);
 
     const marcarAtendido = async (idturno) => {
         try {
@@ -54,62 +34,24 @@ const DashboardRecepcion = () => {
     return (
         <Container className="mt-4">
             <h2 className="mb-4">Turnos del día</h2>
-            <Row className="mb-4">
-                <Col md={6}>
-                    <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Buscar por paciente..."
-                        value={busqueda}
-                        onChange={(evento) => setBusqueda(evento.target.value)}
-                    />
-                </Col>
-            </Row>
+
+            <BuscadorTurnos valor={busqueda} alCambiar={setBusqueda} />
 
             <Row>
 
                 {isLoading ? (
-                    [1, 2, 3].map ((fantasma) => (
-                        <Col md={4} key={fantasma} className="mb-3">
-                            <Card>
-                                <Card.Body>
-                                    <Placeholder as={Card.Title} animation="glow">
-                                        <Placeholder xs={6} />
-                                    </Placeholder>
-                                    <Placeholder as="h5" animation="glow" className="mt-3">
-                                        <Placeholder xs={4} bg="warning" />
-                                    </Placeholder>
-                                    <Placeholder.Button variant="primary" xs={12} className="mt-2" disabled />
-                                </Card.Body>
-                            </Card>
-                        </Col>
-                    ))
-
+                    [1, 2, 3, 4].map (item => <TurnoCardSkeleton key={item} />) 
                 ) : turnos.length === 0 ? (
 
                         <p>No se encontraron turnos pendientes.</p>
 
                 ):
                 turnosFiltrados.map((turno) => (
-                    <Col md={4} key={turno.id} className="mb-3">
-                        <Card>
-                            <Card.Body>
-                                <Card.Title>{turno.Paciente.Nombre}</Card.Title>
-                                <h5>{turno.Paciente.DNI}</h5>
-                                <Card>
-
-                                </Card>
-                                <h5 className="mt-3">
-                                    {turno.estado === "Atendido" 
-                                    ? <Badge bg="success">Atendido</Badge> 
-                                    : <Badge bg="warning" text="dark">En Espera</Badge>}
-                                </h5>
-                                <Button onClick={() => marcarAtendido(turno.id)} disabled={turno.estado === "Atendido"}>
-                                    Llamar
-                                </Button>
-                            </Card.Body>
-                        </Card>
-                    </Col>
+                    <TurnoCard
+                    key={turno.id}
+                    turno={turno}
+                    onAtender={marcarAtendido}
+                    />
                 ))}
             </Row>
         </Container>
