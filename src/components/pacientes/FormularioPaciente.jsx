@@ -6,10 +6,13 @@ import DatosPersonales from "./components/DatosPersonales.jsx";
 import DireccionPaciente from "./components/DireccionPaciente.jsx";
 import ObraSocialPaciente from "./components/ObraSocialPaciente.jsx";
 import ContactoPaciente from "./components/ContactoPaciente.jsx";
+
 // Reglas de validación por campo
+
 const reglasPaciente = {
     Nombre: (valor) => valor.trim() === "" ? "El nombre es obligatorio" : null,
     DNI: (valor) => valor.length < 8 ? "El DNI es obligatorio" : null,
+   
     // Cambiamos "email" por "correoelectronico"
     // Y validamos solo si el usuario escribió algo (valor !== "")
     CorreoElectronico: (valor) => valor !== "" && !valor.includes("@") ? "El email debe contener @" : null,

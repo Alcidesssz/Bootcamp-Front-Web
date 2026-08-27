@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Container, Badge, Row, Col, Card, Button } from 'react-bootstrap';
+import { Container, Badge, Row, Col, Card, Button, Placeholder } from 'react-bootstrap';
+import { toast } from 'sonner';
 import clientesAxios from '../config/axios';
 
 const DashboardRecepcion = () => {
     const [busqueda, setBusqueda] = useState("");
     const [turnos, setTurnos] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     const turnosFiltrados = turnos.filter(turno =>
     turno.Paciente.Nombre.toLowerCase().includes(busqueda.toLowerCase())
@@ -15,6 +17,8 @@ const DashboardRecepcion = () => {
     const obtenerTurnosDelBackend = async () => {
         try{
 
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
             const respuesta = await clientesAxios.get('/turnos');
 
             setTurnos(respuesta.data.data);
@@ -22,6 +26,9 @@ const DashboardRecepcion = () => {
 
         } catch (error) {
             console.error("hubo un error al sincronizar", error);
+            toast.error("Error de red: no se puede conectar al servidor")
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -29,12 +36,19 @@ const DashboardRecepcion = () => {
 
 }, []);
 
-    const marcarComoAtendido = (idturno) => {
+    const marcarAtendido = async (idturno) => {
+        try {
+            await clientesAxios.patch(`/turnos/${idturno}`)
+
         const turnosActualizados = turnos.map(turno => {
             if (turno.id === idturno) return { ...turno, estado: "Atendido" };
             return turno;
         });
         setTurnos(turnosActualizados);
+    } catch (error) {
+        console.error(error)
+        toast.error("Error de Red")
+    };
     };
 
     return (
@@ -53,9 +67,27 @@ const DashboardRecepcion = () => {
             </Row>
 
             <Row>
-                {turnos.length === 0 ? (
 
-                        <p>Cargando turnos del Servidor...</p>
+                {isLoading ? (
+                    [1, 2, 3].map ((fantasma) => (
+                        <Col md={4} key={fantasma} className="mb-3">
+                            <Card>
+                                <Card.Body>
+                                    <Placeholder as={Card.Title} animation="glow">
+                                        <Placeholder xs={6} />
+                                    </Placeholder>
+                                    <Placeholder as="h5" animation="glow" className="mt-3">
+                                        <Placeholder xs={4} bg="warning" />
+                                    </Placeholder>
+                                    <Placeholder.Button variant="primary" xs={12} className="mt-2" disabled />
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                    ))
+
+                ) : turnos.length === 0 ? (
+
+                        <p>No se encontraron turnos pendientes.</p>
 
                 ):
                 turnosFiltrados.map((turno) => (
@@ -72,7 +104,7 @@ const DashboardRecepcion = () => {
                                     ? <Badge bg="success">Atendido</Badge> 
                                     : <Badge bg="warning" text="dark">En Espera</Badge>}
                                 </h5>
-                                <Button onClick={() => marcarComoAtendido(turno.id)} disabled={turno.estado === "Atendido"}>
+                                <Button onClick={() => marcarAtendido(turno.id)} disabled={turno.estado === "Atendido"}>
                                     Llamar
                                 </Button>
                             </Card.Body>
@@ -84,4 +116,4 @@ const DashboardRecepcion = () => {
     );
 };
 
-export default DashboardRecepcion;
+export default DashboardRecepcion
