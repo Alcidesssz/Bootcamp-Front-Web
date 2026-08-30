@@ -3,6 +3,7 @@ import clientesAxios from "../config/axios";
 import { toast } from "sonner";
 
 export const useFetch = (endpoint) => {
+    const [response, setResponse] = useState([]);
     const [data, setData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -10,7 +11,9 @@ export const useFetch = (endpoint) => {
         const fetchData = async () => {
             try {
                 const respuesta = await clientesAxios.get(endpoint);
-                setData(respuesta.data);
+                setResponse(respuesta.data);
+                setData(respuesta.data.data);
+
             } catch (error) {
                 toast.error('Error al cargar datos');
                 console.log(`ERROR: ${error.message}`);
@@ -21,5 +24,5 @@ export const useFetch = (endpoint) => {
         fetchData();
     }, [endpoint]);
 
-    return {data, setData, isLoading}
+    return { response, data, setData, isLoading}
 }

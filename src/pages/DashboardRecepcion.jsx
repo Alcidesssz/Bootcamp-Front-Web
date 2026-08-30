@@ -10,19 +10,19 @@ import TurnoCardSkeleton from '../components/turnos/TurnoCardSkeleton';
 
 const DashboardRecepcion = () => {
     const [busqueda, setBusqueda] = useState("");
-    const { data: turnos, setData: setTurnos, isLoading } = useFetch('/turnos')
+    const { response: response, data: turnos, setData: setTurnos, isLoading } = useFetch('/turnos')
 
-    const turnosFiltrados = turnos.filter(turno =>
-    turno.Paciente.Nombre.toLocaleLowerCase().includes(busqueda.toLowerCase())
+    const turnosFiltrados = turnos.filter(Turno =>
+    Turno.Paciente.Nombre.toLocaleLowerCase().includes(busqueda.toLowerCase())
     );
 
-    const marcarAtendido = async (idturno) => {
+    const marcarAtendido = async (idTurno) => {
         try {
-            await clientesAxios.patch(`/turnos/${idturno}`)
+            await clientesAxios.patch(`/turnos/${idTurno}`)
 
-        const turnosActualizados = turnos.map(turno => {
-            if (turno.id === idturno) return { ...turno, estado: "Atendido" };
-            return turno;
+        const turnosActualizados = turnos.map(Turno => {
+            if (Turno.id === idTurno) return { ...Turno, Estado: "Atendido" };
+            return Turno;
         });
         setTurnos(turnosActualizados);
     } catch (error) {
@@ -33,7 +33,7 @@ const DashboardRecepcion = () => {
 
     return (
         <Container className="mt-4">
-            <h2 className="mb-4">Turnos del día</h2>
+            <h2 className="mb-4">Turnos del día total: {response.total}</h2>
 
             <BuscadorTurnos valor={busqueda} alCambiar={setBusqueda} />
 
@@ -46,10 +46,10 @@ const DashboardRecepcion = () => {
                         <p>No se encontraron turnos pendientes.</p>
 
                 ):
-                turnosFiltrados.map((turno) => (
+                turnosFiltrados.map((Turno) => (
                     <TurnoCard
-                    key={turno.id}
-                    turno={turno}
+                    key={Turno.id}
+                    turno={Turno}
                     onAtender={marcarAtendido}
                     />
                 ))}
