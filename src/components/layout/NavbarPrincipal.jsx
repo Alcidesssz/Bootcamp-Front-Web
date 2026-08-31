@@ -1,4 +1,4 @@
-import { Navbar, Container, Nav } from 'react-bootstrap';
+import { Navbar, Container, Nav, NavDropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 const NavbarPrincipal = () => {
@@ -9,8 +9,21 @@ const NavbarPrincipal = () => {
                 <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto">
+                        {/*Dashboard*/}
                         <Nav.Link as={Link} to="/">Dashboard</Nav.Link>
-                        <Nav.Link as={Link} to="/nuevo-paciente">Registrar Paciente</Nav.Link>
+
+                        {/*Menu Paciente*/}
+                        <NavDropdown title="Pacientes" id="paciente-dropdown">
+                            <NavDropdown.Item as={Link} to="/nuevo-paciente">Registrar Paciente</NavDropdown.Item>
+
+                        </NavDropdown>
+                        
+
+                        {/*Menu Medico*/}
+                        <NavDropdown title="Medicos" id="medico-dropdown">
+                            <NavDropdown.Item as={Link} to="/nuevo-medico">Registrar Medico</NavDropdown.Item>
+
+                        </NavDropdown>
                     </Nav>
                 </Navbar.Collapse>
             </Container>
