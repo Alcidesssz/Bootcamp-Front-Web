@@ -109,7 +109,7 @@ const handleSubmit = async (e) => {
         />
 
         <button type="submit" className={styles.btnGuardar}>
-              Guardar Paciente
+              Guardar Medico
             </button>
 
     </form>
