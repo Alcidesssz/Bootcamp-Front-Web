@@ -10,10 +10,10 @@ import TurnoCardSkeleton from '../components/turnos/TurnoCardSkeleton';
 
 const DashboardRecepcion = () => {
     const [busqueda, setBusqueda] = useState("");
-    const { response: response, data: turnos, setData: setTurnos, isLoading } = useFetch('/turnos')
+    const { response: response, data: turnos, setData: setTurnos, isLoading } = useFetch('/turnos');
 
-    const turnosFiltrados = turnos.filter(Turno =>
-    Turno.Paciente.Nombre.toLocaleLowerCase().includes(busqueda.toLowerCase())
+    const turnosFiltrados = turnos.filter(turno =>
+        (turno.Paciente?.Nombre ?? "Paciente sin asignar").toLocaleLowerCase().includes(busqueda.toLocaleLowerCase())
     );
 
     const marcarAtendido = async (idTurno) => {

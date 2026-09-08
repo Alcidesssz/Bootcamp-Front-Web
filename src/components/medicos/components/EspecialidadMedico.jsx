@@ -11,11 +11,11 @@ const EspecialidadMedico = ({ Medico, handleChange, styles }) => (
                         required
                         >
                             <option value="">Seleccionar Especialidad</option>
-                            <option value="6a9f3dc060a98d9c23354ea3">Odontologia</option>
-                            <option value="6a9f3d8560a98d9c23354ea2">Neurologia</option>
-                            <option value="6a9f3e2960a98d9c23354ea4">Cardiologia</option>
-                            <option value="6a9f39b860a98d9c23354e9b">Pediatria</option>
-                            <option value="6a9f3e5d60a98d9c23354ea5">Dermatologia</option>
+                            <option value="6a9f56c2e376fbf2759c8561">Odontologia</option>
+                            <option value="6a9f5695e376fbf2759c8560">Neurologia</option>
+                            <option value="6a9f5710e376fbf2759c8562">Cardiologia</option>
+                            <option value="6a9f573ae376fbf2759c8563">Pediatria</option>
+                            <option value="6a9f562be376fbf2759c855e">Dermatologia</option>
                         </select>
             </div>
             </div>
